@@ -1,0 +1,10 @@
+.container { max-width: 960px; margin: 20px auto; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+.grid { display: grid; grid-template-columns: 200px 1fr; gap: 8px 12px; margin-bottom: 16px; }
+.section { margin: 16px 0; }
+.row { display: flex; gap: 8px; align-items: center; }
+#swapsTable { width: 100%; border-collapse: collapse; margin-top: 10px; }
+#swapsTable th, #swapsTable td { border: 1px solid #ddd; padding: 6px; }
+.result { background: #f7f7f7; padding: 10px; border-radius: 6px; white-space: pre-wrap; }
+.warnings { color: #a15c00; white-space: pre-wrap; margin: 8px 0; }
+button { padding: 6px 10px; }
+input, select { padding: 6px; }

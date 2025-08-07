@@ -1,76 +1,54 @@
-# 0x Examples
+Safe Rebalance Batch Builder (FastAPI + Minimal Frontend)
 
-A collection of 0x API code examples
+What it does
+- Build a Safe Transaction Builder JSON batch of ERC-20 approvals (Permit2) and 0x Swap v2 Permit2 swaps
+- Advisor can add multiple swaps and download a single batch JSON for the client to approve in Safe{Wallet}
+- Auto-check ERC-20 allowances to Permit2; auto-includes approve() if insufficient
+- Simple UI handles token decimals, default fee bps, slippage, and draft save/load
 
-## v2 (Latest)
+Requirements
+- Python 3.10+
+- A 0x API key (Dashboard)
+- RPC URL for the selected chain (e.g., Ethereum mainnet)
 
-### Swap API
+Quick start
+1) Configure env
+Create `.env`:
 
-- [Swap API v2 Demo App (Permit2) using Next.js App Router](https://github.com/0xProject/0x-examples/tree/main/swap-v2-next-app)
-- [Swap API v2 (Permit2) Headless Example](https://github.com/0xProject/0x-examples/tree/main/swap-v2-headless-example)
-- [Swap API v2 (AllowanceHolder) Headless Example](https://github.com/0xProject/0x-examples/tree/main/swap-v2-allowance-holder-headless-example)
-- [Use Swap API v2 in Your Smart Contract with Foundry](https://github.com/0xProject/0x-examples/tree/main/swap-v2-with-foundry)
+ZEROX_API_KEY=your_0x_api_key
+RPC_URL=https://mainnet.infura.io/v3/your_key
 
-### Gasless API
+2) Install
 
-- [Gasless API v2 Headless Example](https://github.com/0xProject/0x-examples/blob/main/gasless-v2-headless-example/README.md)
-- [Gasless API v2 Trading Bot](https://github.com/0xProject/0x-examples/tree/main/gasless-v2-trading-bot)
+pip install -r requirements.txt
 
+3) Run dev server
 
-## v1 (Deprecated)
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-> [!WARNING]  
-> 0x API v1 was sunset on April 11, 2025. Please migrate to v2. For details, see the [migration guide](https://0x.org/docs/upgrading).
+4) Open UI
+- Navigate to http://localhost:8000
 
-### Swap API
+Using the tool
+- Enter Chain, Safe address, optional RPC URL override
+- Set default fee bps (affiliate) and slippage bps
+- Add swaps: sell token, buy token, human amount
+- Build Batch: backend fetches 0x quotes and checks allowances to Permit2
+- Download for Safe Wallet: saves a `safe-batch.json` compatible with the Safe Transaction Builder import
 
-- [Swap API v1 Demo App using Next.js App Router](https://github.com/0xProject/0x-examples/tree/main/swap-next-app)
-- [Swap API v1 Demo App using Next.js Pages Router](https://github.com/0xProject/0x-nextjs-demo-app/tree/main)
-- [Swap API v1 Demo App using HTML/CSS/JavaScript](https://github.com/0xProject/swap-demo-tutorial)
-- [Swap API v1 Headless Example](https://github.com/0xProject/0x-examples/tree/main/swap-headless-example)
+Notes
+- Permit2: We use ERC20 approve to Permit2 (0x000000000022D473030F116dDEE9F6B43aC78BA3) when allowance is insufficient; this avoids needing an EIP-712 Permit2 signature in calldata
+- 0x Fees: The UI passes `feeRecipient` and `buyTokenPercentageFee` to 0x; fee is taken from the buy token
+- Gas estimate: Sum of 0x `transaction.gas` plus ~60k per approval (coarse)
+- Supported tokens: a small curated list for ETH/Mainnet and Base; extend `app/services/tokens.py` as needed
+- Batch format: standard Safe Transaction Builder JSON with minimal fields `version, chainId, createdAt, meta, transactions`
 
-### Gasless API
+Production
+- Behind a reverse proxy, add rate limiting and input validation
+- Add more chains and tokens; optionally fetch Safe token list from Safe APIs
+- Secure CORS and set a server-side allowlist if exposing publicly
 
-- [Gasless API v1 Demo App using Next.js App Router](https://github.com/0xProject/0x-examples/tree/main/gasless-next-app)
-
-
-## Contribution Guidelines
-
-1. **Fork the Repository:** Start by forking the repository and creating a new branch for your contributions.
-
-2. **Set Up Environment:** Follow the setup guide in the README to ensure your environment matches the development requirements.
-
-3. **Code Standards:** Adhere to the ESLint rules provided in the project
-
-4. **Documentation:** Include or update relevant documentation for new features or changes.
-
-5. **Pull Request:**
-- Provide a clear description of the changes and the issue(s) addressed
-- Tag at least one maintainer for review
-- Include screenshots or logs for UI changes or CLI commands
-
-## Code of Conduct
-
-1. **Be Respectful:** Treat others with respect and kindness in all interactions.
-
-2. **Constructive Feedback:** Provide feedback that is thoughtful, helpful, and actionable.
-
-3. **No Harassment:** Harassment, abusive language, or any form of discrimination will not be tolerated.
-
-4. **Collaborative Environment:** Support an open and welcoming space for contributors from all backgrounds.
-
-## Licenses
-
-Copyright 2025 ZeroEx Labs
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at [LICENSE](http://www.apache.org/licenses/LICENSE-2.0) for details.
-
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-## Support
-
-### GitHub Issues
-For bugs, feature requests, and other inquiries related to this example, please open an issue on the GitHub repository.
-
-### Developer Support
-The 0x developer support team is available to quickly answer your technical questions. Contact the [support team](https://0x.org/docs/introduction/community#contact-support) either through the "Intercom messenger" in the bottom right corner throughout the [0x.org](https://0x.org/).
+FAQ
+- Does this require 0x Permit2 signature appended to calldata? No, we rely on on-chain allowances to Permit2 which 0x supports, so no EIP-712 signature is necessary in the calldata.
+- Can I adjust fee per swap? Yes, edit in the table after adding.
+- Can I save drafts? Yes, use Save/Load Draft (localStorage).
