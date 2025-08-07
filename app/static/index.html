@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Safe Rebalance Batch Builder</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Safe Rebalance Batch Builder</h2>
+    <div class="grid">
+      <label>Chain</label>
+      <select id="chainId">
+        <option value="1">Ethereum (1)</option>
+        <option value="8453">Base (8453)</option>
+      </select>
+
+      <label>Safe Address</label>
+      <input id="safeAddress" placeholder="0x..." />
+
+      <label>RPC URL</label>
+      <input id="rpcUrl" placeholder="https://..." />
+
+      <label>Fee Recipient (default Safe)</label>
+      <input id="feeRecipient" placeholder="0x... (optional)" />
+
+      <label>Default Fee (bps)</label>
+      <input id="feeBps" type="number" min="0" max="10000" value="0" />
+
+      <label>Default Slippage (bps)</label>
+      <input id="slippageBps" type="number" min="0" max="10000" value="100" />
+    </div>
+
+    <div class="section">
+      <h3>Swaps</h3>
+      <div class="row">
+        <select id="sellToken"></select>
+        <span>→</span>
+        <select id="buyToken"></select>
+        <input id="amount" placeholder="Amount (human units)" />
+        <button id="addSwap">Add</button>
+      </div>
+      <table id="swapsTable">
+        <thead>
+          <tr><th>Sell</th><th>Buy</th><th>Amount</th><th>Fee bps</th><th>Slippage bps</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <button id="build">Build Batch</button>
+      <button id="download" disabled>Download for Safe Wallet</button>
+      <button id="saveDraft">Save Draft</button>
+      <button id="loadDraft">Load Draft</button>
+    </div>
+
+    <div id="warnings" class="warnings"></div>
+    <pre id="result" class="result"></pre>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
